@@ -1,0 +1,33 @@
+import numpy as np
+import cv2
+
+cap = cv2.VideoCapture(0)
+
+#input hsv values of fingers here
+lowerIndex = np.array([27,200,51])
+upperIndex = np.array([40,255,87])
+lowerThumb = np.array([123,152,0])
+upperThumb = np.array([179,255,87])
+
+
+
+while(1):
+	
+	_, frame = cap.read()
+	hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+	index = cv2.inRange (hsv, lowerIndex, upperIndex)
+	resIndex = cv2.bitwise_and(frame,frame,mask=index)
+	thumb = cv2.inRange (hsv, lowerThumb, upperThumb)
+	resThumb = cv2.bitwise_and(frame,frame,mask=thumb)
+
+	res = cv2.add(resThumb,resIndex)
+
+
+	cv2.imshow ('Tracker',res)
+
+	k = cv2.waitKey(5) & 0xFF
+	if k == 27:
+		break
+
+cv2.destroyAllWindows()
