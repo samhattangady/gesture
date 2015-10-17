@@ -1,0 +1,50 @@
+import numpy as np
+import cv2
+
+pink = ([148,170,22],[179,255,255])
+green = ([41,170,66],[62,255,255])
+cap = cv2.VideoCapture(0)
+
+#input hsv values of fingers here
+lowerIndex = np.array([148,170,22])
+upperIndex = np.array([179,255,255])
+lowerThumb = np.array([41,170,66])
+upperThumb = np.array([62,255,255])
+kernel = np.ones((5,5),np.uint8)
+
+
+while(1):
+	# We start by reading every frame from the video input. We flip it horizontally, and blur it	
+	_, frame = cap.read()
+	frame = cv2.flip(frame,1)
+	hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+	hsv = cv2.GaussianBlur(hsv,(5,5),0)
+
+
+	# We then isolate the colours defined earlier, and draw a contour around it. *Should be functioned out...
+	index = cv2.inRange (hsv, lowerIndex, upperIndex)
+	resIndex = cv2.bitwise_and(frame,frame,mask=index)
+	resIndex = cv2.morphologyEx(resIndex, cv2.MORPH_OPEN, kernel)
+	resIndex = cv2.dilate(resIndex,kernel,iterations=4)
+	resIndexm = cv2.Canny(resIndex,100,200)
+	_, contours, heirarchy = cv2.findContours(resIndexm,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+	cv2.drawContours(resIndex,contours,-1,(0,0,255),-1)
+
+	thumb = cv2.inRange (hsv, lowerThumb, upperThumb)
+	resThumb = cv2.bitwise_and(frame,frame,mask=thumb)
+	resThumb = cv2.morphologyEx(resThumb, cv2.MORPH_OPEN, kernel)
+	resThumb = cv2.dilate(resThumb,kernel,iterations=4)
+	resThumbm = cv2.Canny(resThumb,100,200)
+	_, contours, heirarchy = cv2.findContours(resThumbm,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+	cv2.drawContours(resThumb,contours,-1,(0,255,0),-1)
+
+	# Add the two resultant
+	res = cv2.add(resThumb,resIndex)
+
+	# Display image and quit when 'Esc' key is pressed
+	cv2.imshow ('Tracker',res)
+	k = cv2.waitKey(5) & 0xFF
+	if k == 27:
+		break
+
+cv2.destroyAllWindows()
