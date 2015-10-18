@@ -10,29 +10,32 @@ indexColour= pink
 thumbColour= green
 
 # Setting kernel for morphology operations
-kernel = np.ones((8,8),np.uint8)
+kernel = np.ones((5,5), np.uint8)
 
 # Starting video capture
 cap = cv2.VideoCapture(0)
 
 # Function. First isolates the finger pased on HSV limits. Morphology functions are to remove noise and make it clearer
 # We then find the contours of the shape we are following. Draw the contours, as well as draw a filled circle in the cetroid
-def fingerTrack(hsv, finger, frame, colour):
-	hsv = cv2.GaussianBlur(hsv,(7,7),0)
-	maskFinger = cv2.inRange (hsv, np.array(finger[0]), np.array(finger[1]))
-	resFinger = cv2.bitwise_and(frame,frame,mask=maskFinger)
+def fingerTrack(hsv,finger,frame,colour):
+	fingerMask = cv2.inRange(hsv, np.array(finger[0]), np.array(finger[1]))
+	resFinger = cv2.bitwise_and(frame, frame, mask = fingerMask)
 	resFinger = cv2.morphologyEx(resFinger, cv2.MORPH_OPEN, kernel)
-	resfinger = cv2.dilate (resFinger, kernel, iterations = 10)
-	resFingerCanny = cv2.Canny(resFinger, 100, 200)	
-	image, contours, heirarchy = cv2.findContours(resFingerCanny, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-	cv2.drawContours(resFinger,contours,-1,colour,1)
-
+	resFinger = cv2.dilate(resFinger, kernel, iterations=4)
+	resFingerCanny = cv2.Canny(resFinger, 100, 200)
+	_, contours, heirarchy = cv2.findContours(resFingerCanny, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+	cv2.drawContours(resFinger, contours, -1, colour, 1)
+	
 	# To find the centroid of the contoured shape and draw a circle
-	cnt = contours[0] #This line gives an error. I think its because the contours is not in the same format. It might have changed between versions of OpenCV, but it hasn't been documented correctly... So check it out
-	M = cv2.moments(cnt)
-	fingerX = int(M['m10']/M['m00'])
-	fingerY = int(M['m01']/M['m00'])
-	resFinger = cv2.circle(resFinger,(fingerX,fingerY), 13, colour, -1)
+	tracked = 0;
+	for cnt in contours:
+		M = cv2.moments(cnt)
+		if M['m00'] != 0 and tracked == 0:		
+			fingerX = int(M['m10']/M['m00'])
+			fingerY = int(M['m01']/M['m00'])
+			resFinger = cv2.circle(resFinger,(fingerX,fingerY), 13, colour, -1) 
+			tracked = tracked+1
+
 	return resFinger
 
 # Loop to be run every frame
@@ -42,10 +45,9 @@ while(1):
 	_, frame = cap.read()
 	frame = cv2.flip(frame,1)
 	hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-	hsv = cv2.GaussianBlur(hsv,(5,5),0)
+	hsv = cv2.GaussianBlur(hsv, (5,5),0)
 
-
-	# We then isolate the colours defined earlier, and draw a contour around it. *Should be functioned out...
+	# Send the fingers to the function fingerTrack based on their colours, and the colour of contours that we want
 	index = fingerTrack(hsv, indexColour, frame, (0,0,255))
 	thumb = fingerTrack(hsv, thumbColour, frame, (0,255,0))
  	
