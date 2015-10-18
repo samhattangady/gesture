@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Displays the tracked fingers as circles on the screen
 
 import numpy as np
@@ -15,7 +16,7 @@ kernel = np.ones((5,5), np.uint8)
 cap = cv2.VideoCapture(0)
 _,temp = cap.read()
 resolution = temp.shape 
-
+print resolution
 # Function. First isolates the finger pased on HSV limits. Morphology functions are to remove noise and make it clearer
 # We then find the contours of the shape we are following. Draw the contours, as well as draw a filled circle in the cetroid
 def fingerTrack(hsv, finger, frame, centroidColour, screen):

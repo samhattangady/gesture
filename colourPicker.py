@@ -1,5 +1,6 @@
-# This is used to find the HSV limits of any objects. Just need to drag the sliders forward and back until the object that you need is in white 
-# The 'Picker' window shows what the camera sees, unfiltered. 'Mask' window varies with changes in HSV sliders.
+#!/usr/bin/env python
+# This script is used to find the HSV limits of any objects. Just need to drag the sliders forward and back until the object that you need is in white 
+# The 'Picker' window shows what the camera sees, filtered. 'Mask' window varies with changes in HSV sliders.
 # For now, you will have to manually note down the HSV upper and lower values. Later on, maybe an export functionality can be included. 
 
 import numpy as np
