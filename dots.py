@@ -6,8 +6,8 @@ import cv2
 import colours as clr
 
 # Select colour for each finger
-indexColour= clr.pink
-thumbColour= clr.green
+indexColour= clr.pinkHSV
+thumbColour= clr.greenHSV
 
 # Setting kernel for morphology operations
 kernel = np.ones((5,5), np.uint8)
@@ -55,8 +55,8 @@ while(1):
 	screen = np.zeros(resolution, np.uint8)
 
 	# Send the fingers to the function fingerTrack based on their colours, and the colour of contours/centroid dots that we want
-	index = fingerTrack(hsv, indexColour, frame, clr.redContours, screen)
-	thumb = fingerTrack(hsv, thumbColour, frame, clr.greenContours, screen)
+	index = fingerTrack(hsv, indexColour, frame, clr.redBGR, screen)
+	thumb = fingerTrack(hsv, thumbColour, frame, clr.greenBGR, screen)
  	
 	# Draw circles at the tracked coordinates
 	res = cv2.add(thumb,index)

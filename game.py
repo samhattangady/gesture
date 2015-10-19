@@ -17,6 +17,9 @@ clock = pg.time.Clock()
 clawWidth = 45
 clawHeight = 15
 blurSize = 5
+speed = 1
+thumbCoord = None # Initializing variables, because we need to store the past values.
+indexCoord = None
  
 # Starting camera, as well as finding the dimensions
 cap = cv2.VideoCapture(0)
@@ -40,6 +43,11 @@ while not done:
 	hsv = cv2.GaussianBlur(hsv, (blurSize, blurSize), 0)
 
 	# Calling the function to find the coordinates of the trackers attached to the fingers
+	if thumbCoord != None:
+		thumbPrev = thumbCoord
+	if indexCoord != None:
+		indexPrev = indexCoord
+	
 	thumbCoord = track.fingerTrack (hsv, thumb, frame)	
 	indexCoord = track.fingerTrack (hsv, index, frame)
 
@@ -49,4 +57,4 @@ while not done:
 		pg.draw.rect(screen, upperClaw, pg.Rect((indexCoord[0]+(clawWidth/2), indexCoord[1]+(clawHeight/2), clawWidth, clawHeight)))
 
 	pg.display.flip()
-	clock.tick(60)
+#	clock.tick(60)

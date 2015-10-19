@@ -11,6 +11,7 @@ kernel = np.zeros((5,5),np.uint8)
 def fingerTrack(hsv, finger, frame):
 	fingerMask = cv2.inRange(hsv, np.array(finger[0]), np.array(finger[1]))
 	finger = cv2.bitwise_and(frame, frame, mask = fingerMask)
+#	finger = cv2.erode(finger, kernel, iterations=2)
 	finger = cv2.morphologyEx(finger, cv2.MORPH_OPEN, kernel)
 	finger = cv2.dilate(finger, kernel, iterations=4)
 	fingerCanny = cv2.Canny(finger, 100, 200)
