@@ -5,14 +5,19 @@ import colours as clr
 import track
 
 # Setting colours for fingers
-thumb = clr.pinkHSV
-index = clr.greenHSV
+thumb = clr.yellowHSV
+index = clr.pinkHSV
 background = clr.blueBeige
 upperClaw = clr.blueBeige2
 lowerClaw = clr.blueBeige3
 
 clock = pg.time.Clock()
 
+# Setting constants for game objects
+clawWidth = 45
+clawHeight = 15
+blurSize = 5
+ 
 # Starting camera, as well as finding the dimensions
 cap = cv2.VideoCapture(0)
 _, temp = cap.read()
@@ -32,16 +37,16 @@ while not done:
 	_, frame = cap.read()
 	frame = cv2.flip(frame, 1)
 	hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-	hsv = cv2.GaussianBlur(hsv, (5,5), 0)
+	hsv = cv2.GaussianBlur(hsv, (blurSize, blurSize), 0)
 
 	# Calling the function to find the coordinates of the trackers attached to the fingers
 	thumbCoord = track.fingerTrack (hsv, thumb, frame)	
 	indexCoord = track.fingerTrack (hsv, index, frame)
 
 	if thumbCoord != None:
-		pg.draw.rect(screen, lowerClaw, pg.Rect((thumbCoord[0], thumbCoord[1], 45, 15)))
+		pg.draw.rect(screen, lowerClaw, pg.Rect((thumbCoord[0]+(clawWidth/2), thumbCoord[1]+(clawHeight/2), clawWidth, clawHeight)))
 	if indexCoord != None:		
-		pg.draw.rect(screen, upperClaw, pg.Rect((indexCoord[0], indexCoord[1], 45, 15)))
+		pg.draw.rect(screen, upperClaw, pg.Rect((indexCoord[0]+(clawWidth/2), indexCoord[1]+(clawHeight/2), clawWidth, clawHeight)))
 
 	pg.display.flip()
 	clock.tick(60)

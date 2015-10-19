@@ -1,19 +1,13 @@
 import numpy as np
 import cv2
-
-# Declaring list of colours of possible fingers in HSV lower and upper limit format
-# If you need to add to this list, use colourPicker and isolate the coloured element that you need.
-pink = [[148,170,22],[179,255,255]]
-green = [[41,129,66],[81,255,255]]
-
-# Declaring a list of colours for contour lines in BRG format
-redContours = (000,000,255)
-greenContours = (000,255,000)
-blueContours = (255,000,000)
+import colours
 
 # Select colour for each finger
-indexColour= pink
-thumbColour= green
+indexColour= colours.pinkHSV
+thumbColour= colours.yellowHSV
+ringColour = colours.blueHSV
+#middleColour=colours.greenHSV
+#pinkyColour = colours.orangeHSV
 
 # Setting kernel for morphology operations
 kernel = np.ones((5,5), np.uint8)
@@ -25,24 +19,27 @@ cap = cv2.VideoCapture(0)
 # We then find the contours of the shape we are following. Draw the contours, as well as draw a filled circle in the cetroid
 def fingerTrack(hsv,finger,frame,contourColour):
 	fingerMask = cv2.inRange(hsv, np.array(finger[0]), np.array(finger[1]))
-	resFinger = cv2.bitwise_and(frame, frame, mask = fingerMask)
-	resFinger = cv2.morphologyEx(resFinger, cv2.MORPH_OPEN, kernel)
-	resFinger = cv2.dilate(resFinger, kernel, iterations=4)
-	resFingerCanny = cv2.Canny(resFinger, 100, 200)
-	_, contours, heirarchy = cv2.findContours(resFingerCanny, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-	cv2.drawContours(resFinger, contours, -1, contourColour, 1)
+	finger = cv2.bitwise_and(frame, frame, mask = fingerMask)
+	finger = cv2.morphologyEx(finger, cv2.MORPH_OPEN, kernel)
+	finger = cv2.dilate(finger, kernel, iterations=4)
+	fingerCanny = cv2.Canny(finger, 100, 200)
+	_, contours, heirarchy = cv2.findContours(fingerCanny, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+	cv2.drawContours(finger, contours, -1, contourColour, 1)
 	
-	# To find the centroid of the contoured shape and draw a circle. Send only one.
-	tracked = 0;
+	# To find the centroid of the largest contour and draw a circle. 
+	largestContourArea = 0
+	drawCentroid = False # This is because if there is no tracked object on screen, script will close
 	for cnt in contours:
 		M = cv2.moments(cnt)
-		if M['m00'] != 0 and tracked == 0:		
+		if M['m00'] != 0 and M['m00'] > largestContourArea:		
 			fingerX = int(M['m10']/M['m00'])
 			fingerY = int(M['m01']/M['m00'])
-			resFinger = cv2.circle(resFinger,(fingerX,fingerY), 7, contourColour, -1) 
-			tracked = tracked+1
+			largestContourArea = M['m00']
+			drawCentroid = True
+	if drawCentroid:
+		resFinger = cv2.circle(finger,(fingerX,fingerY), 7, contourColour, -1) 
 
-	return resFinger
+	return finger
 
 # Loop to be run every frame
 while(1):
@@ -54,9 +51,12 @@ while(1):
 	hsv = cv2.GaussianBlur(hsv, (5,5),0)
 
 	# Send the fingers to the function fingerTrack based on their colours, and the colour of contours/centroid dots that we want
-	index = fingerTrack(hsv, indexColour, frame, redContours)
-	thumb = fingerTrack(hsv, thumbColour, frame, greenContours)
- 	
+	index = fingerTrack(hsv, indexColour, frame, colours.redBGR)
+	thumb = fingerTrack(hsv, thumbColour, frame, colours.greenBGR)
+	ring = fingerTrack (hsv, ringColour, frame, colours.greenBGR)
+#	middle =fingerTrack(hsv,middleColour, frame, colours.redBGR)
+#	pinky = fingerTrack(hsv, pinkyColour, frame, colours.greenBGR) 	
+
 	# Add the two resultant
 	res = cv2.add(thumb,index)
 
