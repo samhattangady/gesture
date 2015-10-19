@@ -1,12 +1,15 @@
 # Declaring list of colours of possible fingers in HSV lower and upper limit format
 # If you need to add to this list, use colourPicker script and isolate the coloured element that you need.
-pinkHSV = [[140,89,22],[179,255,255]]
+# format => colourHSV = [[lowerHue,lowerSat,lowerVal],[upperHue,upperSat,upperVal]]
+pinkHSV = [[159,139,110],[179,255,223]]
 greenHSV = [[41,129,66],[81,255,255]]
-
+orangeHSV = [[0,201,64],[19,255,182]]
+yellowHSV = [[18,138,63],[43,219,181]]
+blueHSV = [[72,0,79],[130,107,147]]
 # Declaring a list of colours for contour lines in BRG format
-redBRG = (000,000,255)
-greenBRG = (000,255,000)
-blueBRG = (255,000,000)
+redBGR= (000,000,255)
+greenBGR = (000,255,000)
+blueBGR = (255,000,000)
 
 # Declaring some RGB colours
 blueBeige = (196,208,186)
