@@ -30,16 +30,16 @@ y,x,depth = resolution # temp.shape returns in rows and coloumns. So rows = y, c
 
 pg.init()
 screen = pg.display.set_mode((x, y))
-done = False
+exitGame = False
 
 # Function to convert coordinates to pg.Rect
 def coordToRect (coord):
 	return pg.Rect((coord[0]-(clawWidth/2), coord[1]-(clawHeight/2), clawWidth, clawHeight))
 
-while not done:
+while not exitGame:
 	for event in pg.event.get():
-		if event.type == pg.QUIT:
-			done = True
+		if event.type == pg.QUIT or pg.key.get_pressed()[pg.K_ESCAPE]:
+			exitGame = True
 	
 	screen.fill(background)
 	_, frame = cap.read()
@@ -48,28 +48,26 @@ while not done:
 	hsv = cv2.GaussianBlur(hsv, (blurSize, blurSize), 0)
 	
 	# Saving the previous coordinates of the fingers (for smoother motion as well as collision related things)
-	if thumbCoord != None:
+	'''if thumbCoord != None:
 		thumbPrev= thumbCoord
-	if indexCoord != None:
-		indexPrev = indexCoord
+		indexPrev = indexCoord'''
 	
 	# Calling the function to find the coordinates of the trackers attached to the fingers
-	thumbCoord = track.fingerTrack (hsv, thumb, frame)	
-	indexCoord = track.fingerTrack (hsv, index, frame)
+	thumbCoord = track.fingerTrack(hsv, thumb, frame)	
+	if thumbCoord != None:
+		indexCoord = track.fingerTrack(hsv, index, frame)
+		if indexCoord == None:
+			indexCoord = thumbCoord
+
+	# We only want the index to move up and down above the thumb. It should always stay in line with the thumb
+	if thumbCoord != None and indexCoord!=None:
+		indexCoord = (thumbCoord[0], indexCoord[1])
+		if indexCoord[1] > thumbCoord[1]:
+			indexCoord = (indexCoord[0], thumbCoord[1]-clawHeight) 
 
 	if thumbCoord != None:
-		thumbRect = coordToRect(thumbCoord)
-	if indexCoord != None:		
-		indexRect = coordToRect(indexCoord)
-
-	if thumbRect != None and indexRect != None:
-		if collide.detect(thumbRect, indexRect):
-			thumbRect = coordToRect((thumbCoord[0], thumbPrev[1])) 
-
-	if thumbRect != None:
-		pg.draw.rect(screen, lowerClaw, thumbRect)
-	if indexRect != None:		
-		pg.draw.rect(screen, upperClaw, indexRect)
+		pg.draw.rect(screen, lowerClaw, coordToRect(thumbCoord))
+		pg.draw.rect(screen, upperClaw, coordToRect(indexCoord))
 
 	pg.display.flip()
 	clock.tick(60)
