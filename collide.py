@@ -8,7 +8,7 @@ def detect(rect1, rect2):
 	
 def holding(box, upperClaw, lowerClaw):
 	return \
-	(box[1] - upperClaw[1] <= upperClaw [3]) and \
-	(lowerClaw[1] - box[1] <= box[3]) \
-	and ((lowerClaw[0] > box[0] and lowerClaw[0] < box[0]+box[2]) or (lowerClaw[0]+lowerClaw[2] > box[0] and lowerClaw[0]+lowerClaw[2] < box[0]+box[2])) 
+	(box[1] - upperClaw[1] <= upperClaw[3]) and \
+	(lowerClaw[1] - box[1] <= box[3]) and \
+	((lowerClaw[0] > box[0] and lowerClaw[0] < box[0]+box[2]) or (lowerClaw[0]+lowerClaw[2] > box[0] and lowerClaw[0]+lowerClaw[2] < box[0]+box[2])) 
 
