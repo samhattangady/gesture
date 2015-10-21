@@ -6,21 +6,22 @@ import track
 import collide
 
 # Setting colours for fingers
-thumb = clr.greenHSV
-index = clr.pinkHSV
+thumb = clr.pinkHSV
+index = clr.orangeHSV
 background = clr.blueBeige
 upperClaw = clr.blueBeige2
 lowerClaw = clr.blueBeige3
+boxColour = clr.red
 
 clock = pg.time.Clock()
 
 # Setting constants for game objects
-clawWidth = 45
-clawHeight = 15
+claw= (45, 15)
 blurSize = 5
 speed = 1
-thumbCoord= indexCoord= thumbRect= indexRect = None # Initializing variables, because we need to store the past values.
-
+thumbCoord= indexCoord= None # Initializing variables, because we need to store the past values.
+box = (50, 50)
+boxCoord = (160, 160)
  
 # Starting camera, as well as finding the dimensions
 cap = cv2.VideoCapture(0)
@@ -33,8 +34,8 @@ screen = pg.display.set_mode((x, y))
 exitGame = False
 
 # Function to convert coordinates to pg.Rect
-def coordToRect (coord):
-	return pg.Rect((coord[0]-(clawWidth/2), coord[1]-(clawHeight/2), clawWidth, clawHeight))
+def coordToRect (coord, size):
+	return pg.Rect((coord[0]-(size[0]/2), coord[1]-(size[1]/2), size[0], size[1]))
 
 while not exitGame:
 	for event in pg.event.get():
@@ -46,28 +47,37 @@ while not exitGame:
 	frame = cv2.flip(frame, 1)
 	hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 	hsv = cv2.GaussianBlur(hsv, (blurSize, blurSize), 0)
+	fingerPresent = False
 	
 	# Saving the previous coordinates of the fingers (for smoother motion as well as collision related things)
-	'''if thumbCoord != None:
-		thumbPrev= thumbCoord
-		indexPrev = indexCoord'''
+	if thumbCoord != None:
+		thumbPrev = thumbCoord
+		indexPrev = indexCoord
 	
 	# Calling the function to find the coordinates of the trackers attached to the fingers
 	thumbCoord = track.fingerTrack(hsv, thumb, frame)	
 	if thumbCoord != None:
+		fingerPresent = True
 		indexCoord = track.fingerTrack(hsv, index, frame)
 		if indexCoord == None:
 			indexCoord = thumbCoord
-
+	
 	# We only want the index to move up and down above the thumb. It should always stay in line with the thumb
-	if thumbCoord != None and indexCoord!=None:
+	if fingerPresent:
 		indexCoord = (thumbCoord[0], indexCoord[1])
 		if indexCoord[1] > thumbCoord[1]:
-			indexCoord = (indexCoord[0], thumbCoord[1]-clawHeight) 
+			indexCoord = (indexCoord[0], thumbCoord[1]-claw[1]) 
+	
+	# Detecting collision between claw and box, and making it disappear if collided, and reappear if not
+	if fingerPresent:
+		if collide.holding(coordToRect(boxCoord,box), coordToRect(thumbCoord, claw), coordToRect(indexCoord,claw)):
+			boxCoord = (thumbCoord[0], thumbCoord[1]-(box[1]/2)-(claw[1]/2))	
 
-	if thumbCoord != None:
-		pg.draw.rect(screen, lowerClaw, coordToRect(thumbCoord))
-		pg.draw.rect(screen, upperClaw, coordToRect(indexCoord))
+	pg.draw.rect(screen, boxColour, coordToRect(boxCoord, box))
+
+	if fingerPresent:
+		pg.draw.rect(screen, upperClaw, coordToRect(indexCoord, claw))
+		pg.draw.rect(screen, lowerClaw, coordToRect(thumbCoord, claw))
 
 	pg.display.flip()
 	clock.tick(60)
