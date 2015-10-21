@@ -2,7 +2,7 @@
 # If you need to add to this list, use colourPicker script and isolate the coloured element that you need.
 # format => colourHSV = [[lowerHue,lowerSat,lowerVal],[upperHue,upperSat,upperVal]]
 pinkHSV = [[159,95,22],[179,255,223]]
-greenHSV = [[41,129,66],[81,255,255]]
+greenHSV = [[45,204,55],[74,255,105]]
 orangeHSV = [[0,201,64],[19,255,182]]
 yellowHSV = [[18,138,63],[43,219,181]]
 blueHSV = [[72,0,79],[130,107,147]]
