@@ -71,7 +71,8 @@ while not exitGame:
 	# Detecting collision between claw and box, and making it disappear if collided, and reappear if not
 	if fingerPresent:
 		if collide.holding(coordToRect(boxCoord,box), coordToRect(indexCoord, claw), coordToRect(thumbCoord,claw)):
-			boxCoord = (thumbCoord[0], thumbCoord[1]-(box[1]/2)-(claw[1]/2))	
+			boxCoord = (thumbCoord[0], (thumbCoord[1]+indexCoord[1])/2)	
+			thumbCoord = (thumbCoord[0], boxCoord[1] + (box[1]/2))
 			indexCoord = (thumbCoord[0], thumbCoord[1]-box[1]-claw[1])
 
 	# Drawing the game objects
