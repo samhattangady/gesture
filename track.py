@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-# Similar to dots. Function to be used in other scripts 
-
+# Consists of function to return the centroid of the largest contour of given colour thresholds
 import numpy as np
 import cv2
 
