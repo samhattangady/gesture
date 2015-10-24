@@ -7,7 +7,7 @@ import colours as clr
 
 # Select colour for each finger
 indexColour= clr.pinkHSV
-thumbColour= clr.greenHSV
+thumbColour= clr.orangeHSV
 
 # Setting kernel for morphology operations
 kernel = np.ones((5,5), np.uint8)

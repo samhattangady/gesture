@@ -1,11 +1,13 @@
+# Tracks multiple coloured objects, draws contour and centroid for each
+
 import numpy as np
 import cv2
 import colours
 
 # Select colour for each finger
 indexColour= colours.pinkHSV
-thumbColour= colours.yellowHSV
-ringColour = colours.blueHSV
+thumbColour= colours.orangeHSV
+#ringColour = colours.blueHSV
 #middleColour=colours.greenHSV
 #pinkyColour = colours.orangeHSV
 
@@ -53,7 +55,7 @@ while(1):
 	# Send the fingers to the function fingerTrack based on their colours, and the colour of contours/centroid dots that we want
 	index = fingerTrack(hsv, indexColour, frame, colours.redBGR)
 	thumb = fingerTrack(hsv, thumbColour, frame, colours.greenBGR)
-	ring = fingerTrack (hsv, ringColour, frame, colours.greenBGR)
+#	ring = fingerTrack (hsv, ringColour, frame, colours.greenBGR)
 #	middle =fingerTrack(hsv,middleColour, frame, colours.redBGR)
 #	pinky = fingerTrack(hsv, pinkyColour, frame, colours.greenBGR) 	
 
