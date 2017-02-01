@@ -1,3 +1,6 @@
+Completed as final project of CS50x.
+Youtube link: https://www.youtube.com/watch?v=0hp-6y0bo_Q
+
 We watch Minority Report and wish that we could make the objects on our screen move with just movements of our fingers, without ever realizing that one piece of hardware that is really needed to make that happens comes preinstalled in almost every single computer and laptop. 
 So here I am, trying to make you feel like you are in the future by tapping into your webcam.
 
